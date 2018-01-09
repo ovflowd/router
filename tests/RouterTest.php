@@ -1,6 +1,13 @@
 <?php
 
 namespace {
+
+    class Handler {
+        public function notfound() {
+            echo 'route not found';
+        }
+    }
+
     class RouterTest extends PHPUnit_Framework_TestCase
     {
         protected function setUp()
@@ -260,7 +267,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/hello/(\w+)', function ($name) {
-                echo 'Hello ' . $name;
+                echo 'Hello '.$name;
             });
 
             // Test the /hello/bramus route
@@ -278,7 +285,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/hello/(\w+)/(\w+)', function ($name, $lastname) {
-                echo 'Hello ' . $name . ' ' . $lastname;
+                echo 'Hello '.$name.' '.$lastname;
             });
 
             // Test the /hello/bramus route
@@ -296,7 +303,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/hello/{name}/{lastname}', function ($name, $lastname) {
-                echo 'Hello ' . $name . ' ' . $lastname;
+                echo 'Hello '.$name.' '.$lastname;
             });
 
             // Test the /hello/bramus route
@@ -314,7 +321,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/hello(/\w+)?', function ($name = null) {
-                echo 'Hello ' . (($name) ? $name : 'stranger');
+                echo 'Hello '.(($name) ? $name : 'stranger');
             });
 
             // Test the /hello route
@@ -338,7 +345,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/(.*)/page([0-9]+)', function ($place, $page) {
-                echo 'Hello ' . $place . ' page : ' . $page;
+                echo 'Hello '.$place.' page : '.$page;
             });
 
             // Test the /hello/bramus/page3 route
@@ -358,21 +365,25 @@ namespace {
             $router->get('/blog(/\d{4}(/\d{2}(/\d{2}(/[a-z0-9_-]+)?)?)?)?', function ($year = null, $month = null, $day = null, $slug = null) {
                 if (!$year) {
                     echo 'Blog overview';
+
                     return;
                 }
                 if (!$month) {
-                    echo 'Blog year overview (' . $year . ')';
+                    echo 'Blog year overview ('.$year.')';
+
                     return;
                 }
                 if (!$day) {
-                    echo 'Blog month overview (' . $year . '-' . $month . ')';
+                    echo 'Blog month overview ('.$year.'-'.$month.')';
+
                     return;
                 }
                 if (!$slug) {
-                    echo 'Blog day overview (' . $year . '-' . $month . '-' . $day . ')';
+                    echo 'Blog day overview ('.$year.'-'.$month.'-'.$day.')';
+
                     return;
                 }
-                echo 'Blogpost ' . htmlentities($slug) . ' detail (' . $year . '-' . $month . '-' . $day . ')';
+                echo 'Blogpost '.htmlentities($slug).' detail ('.$year.'-'.$month.'-'.$day.')';
             });
 
             // Test the /blog route
@@ -414,7 +425,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/hello(/\w+(/\w+)?)?', function ($name1 = null, $name2 = null) {
-                echo 'Hello ' . (($name1) ? $name1 : 'stranger') . ' ' . (($name2) ? $name2 : 'stranger');
+                echo 'Hello '.(($name1) ? $name1 : 'stranger').' '.(($name2) ? $name2 : 'stranger');
             });
 
             // Test the /hello/bramus route
@@ -438,7 +449,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('(.*)', function ($name) {
-                echo 'Hello ' . $name;
+                echo 'Hello '.$name;
             });
 
             // Test the /hello/bramus route
@@ -456,7 +467,7 @@ namespace {
             // Create Router
             $router = new \Bramus\Router\Router();
             $router->get('/hello/(.*)', function ($name) {
-                echo 'Hello ' . $name;
+                echo 'Hello '.$name;
             });
 
             // Test the /hello/bramus route
@@ -469,31 +480,10 @@ namespace {
             ob_end_clean();
         }
 
-        /**
-         * @runInSeparateProcess
-         */
-        public function testDefault404()
-        {
-            // Create Router
-            ob_start();
-            $router = new \Bramus\Router\Router();
-            $router->get('/', function () {
-                echo 'home';
-            });
-
-            // Test the /hello route
-            ob_clean();
-            $_SERVER['REQUEST_URI'] = '/foo';
-            $router->run();
-            $this->assertEquals('', ob_get_contents());
-
-            // Cleanup
-            ob_end_clean();
-        }
-
         public function test404()
         {
             // Create Router
+            ob_start();
             $router = new \Bramus\Router\Router();
             $router->get('/', function () {
                 echo 'home';
@@ -512,37 +502,60 @@ namespace {
             ob_clean();
             $_SERVER['REQUEST_URI'] = '/foo';
             $router->run();
+
             $this->assertEquals('route not found', ob_get_contents());
 
             // Cleanup
             ob_end_clean();
         }
 
-        public function testBeforeRouteMiddleware()
+        public function test404WithClassAtMethod()
         {
             // Create Router
             $router = new \Bramus\Router\Router();
-            $router->before('GET', '/about', function () {
-                echo 'before ';
-            });
-            $router->get('/about', function () {
-                echo 'about';
-            });
-            $router->get('/contact', function () {
-                echo 'contact';
+            $router->get('/', function () {
+                echo 'home';
             });
 
-            // Test the /about route
+            $router->set404('Handler@notFound');
+
+            // Test the /hello route
             ob_start();
-            $_SERVER['REQUEST_URI'] = '/about';
+            $_SERVER['REQUEST_URI'] = '/';
             $router->run();
-            $this->assertContains('before', ob_get_contents());
+            $this->assertEquals('home', ob_get_contents());
 
-            // Test the /contact route
+            // Test the /hello/bramus route
             ob_clean();
-            $_SERVER['REQUEST_URI'] = '/contact';
+            $_SERVER['REQUEST_URI'] = '/foo';
             $router->run();
-            $this->assertNotContains('before', ob_get_contents());
+            $this->assertEquals('route not found', ob_get_contents());
+
+            // Cleanup
+            ob_end_clean();
+        }
+
+        public function test404WithClassAtStaticMethod()
+        {
+            // Create Router
+            $router = new \Bramus\Router\Router();
+            $router->get('/', function () {
+                echo 'home';
+            });
+
+            $router->set404('Handler@notFound');
+
+            // Test the /hello route
+            ob_start();
+            $_SERVER['REQUEST_URI'] = '/';
+            $router->run();
+            $this->assertEquals('home', ob_get_contents());
+
+            // Test the /hello/bramus route
+            ob_clean();
+            $_SERVER['REQUEST_URI'] = '/foo';
+            $router->run();
+            $this->assertEquals('route not found', ob_get_contents());
 
             // Cleanup
             ob_end_clean();
@@ -552,8 +565,11 @@ namespace {
         {
             // Create Router
             $router = new \Bramus\Router\Router();
-            $router->before('GET', '/.*', function () {
+            $router->before('GET|POST', '/.*', function () {
                 echo 'before ';
+            });
+            $router->get('/', function () {
+                echo 'root';
             });
             $router->get('/about', function () {
                 echo 'about';
@@ -561,18 +577,34 @@ namespace {
             $router->get('/contact', function () {
                 echo 'contact';
             });
+            $router->post('/post', function () {
+                echo 'post';
+            });
+
+            // Test the / route
+            ob_start();
+            $_SERVER['REQUEST_URI'] = '/';
+            $router->run();
+            $this->assertEquals('before root', ob_get_contents());
 
             // Test the /about route
-            ob_start();
+            ob_clean();
             $_SERVER['REQUEST_URI'] = '/about';
             $router->run();
-            $this->assertContains('before', ob_get_contents());
+            $this->assertEquals('before about', ob_get_contents());
 
             // Test the /contact route
             ob_clean();
             $_SERVER['REQUEST_URI'] = '/contact';
             $router->run();
-            $this->assertContains('before', ob_get_contents());
+            $this->assertEquals('before contact', ob_get_contents());
+
+            // Test the /post route
+            ob_clean();
+            $_SERVER['REQUEST_URI'] = '/post';
+            $_SERVER['REQUEST_METHOD'] = 'POST';
+            $router->run();
+            $this->assertEquals('before post', ob_get_contents());
 
             // Cleanup
             ob_end_clean();

@@ -9,8 +9,7 @@
 namespace Bramus\Router;
 
 /**
- * Class Router
- * @package Bramus\Router
+ * Class Router.
  */
 class Router
 {
@@ -35,19 +34,14 @@ class Router
     private $baseRoute = '';
 
     /**
+     * @var string The Request Method that needs to be handled
+     */
+    private $requestedMethod = '';
+
+    /**
      * @var string The Server Base Path for Router Execution
      */
     private $serverBasePath;
-
-    /**
-     * @var array The Http Requested Headers
-     */
-    private $headers = array();
-
-    /**
-     * @var string The Http Requested Method
-     */
-    private $method = '';
 
     /**
      * @var string Default Controllers Namespace
@@ -55,50 +49,50 @@ class Router
     private $namespace = '';
 
     /**
-     * Store a before middleware route and a handling function to be executed when accessed using one of the specified methods
+     * Store a before middleware route and a handling function to be executed when accessed using one of the specified methods.
      *
-     * @param string $methods Allowed methods, | delimited
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $methods Allowed methods, | delimited
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function before($methods, $pattern, $fn)
     {
-        $pattern = $this->baseRoute . '/' . trim($pattern, '/');
+        $pattern = $this->baseRoute.'/'.trim($pattern, '/');
         $pattern = $this->baseRoute ? rtrim($pattern, '/') : $pattern;
 
         foreach (explode('|', $methods) as $method) {
             $this->beforeRoutes[$method][] = array(
                 'pattern' => $pattern,
-                'fn' => $fn
+                'fn' => $fn,
             );
         }
     }
 
     /**
-     * Store a route and a handling function to be executed when accessed using one of the specified methods
+     * Store a route and a handling function to be executed when accessed using one of the specified methods.
      *
-     * @param string $methods Allowed methods, | delimited
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $methods Allowed methods, | delimited
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function match($methods, $pattern, $fn)
     {
-        $pattern = $this->baseRoute . '/' . trim($pattern, '/');
+        $pattern = $this->baseRoute.'/'.trim($pattern, '/');
         $pattern = $this->baseRoute ? rtrim($pattern, '/') : $pattern;
 
         foreach (explode('|', $methods) as $method) {
             $this->afterRoutes[$method][] = array(
                 'pattern' => $pattern,
-                'fn' => $fn
+                'fn' => $fn,
             );
         }
     }
 
     /**
-     * Shorthand for a route accessed using any method
+     * Shorthand for a route accessed using any method.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function all($pattern, $fn)
     {
@@ -106,10 +100,10 @@ class Router
     }
 
     /**
-     * Shorthand for a route accessed using GET
+     * Shorthand for a route accessed using GET.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function get($pattern, $fn)
     {
@@ -117,10 +111,10 @@ class Router
     }
 
     /**
-     * Shorthand for a route accessed using POST
+     * Shorthand for a route accessed using POST.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function post($pattern, $fn)
     {
@@ -128,10 +122,10 @@ class Router
     }
 
     /**
-     * Shorthand for a route accessed using PATCH
+     * Shorthand for a route accessed using PATCH.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function patch($pattern, $fn)
     {
@@ -139,10 +133,10 @@ class Router
     }
 
     /**
-     * Shorthand for a route accessed using DELETE
+     * Shorthand for a route accessed using DELETE.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function delete($pattern, $fn)
     {
@@ -150,10 +144,10 @@ class Router
     }
 
     /**
-     * Shorthand for a route accessed using PUT
+     * Shorthand for a route accessed using PUT.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function put($pattern, $fn)
     {
@@ -161,10 +155,10 @@ class Router
     }
 
     /**
-     * Shorthand for a route accessed using OPTIONS
+     * Shorthand for a route accessed using OPTIONS.
      *
-     * @param string $pattern A route pattern such as /about/system
-     * @param object|callable $fn The handling function to be executed
+     * @param string          $pattern A route pattern such as /about/system
+     * @param object|callable $fn      The handling function to be executed
      */
     public function options($pattern, $fn)
     {
@@ -172,10 +166,10 @@ class Router
     }
 
     /**
-     * Mounts a collection of callbacks onto a base route
+     * Mounts a collection of callbacks onto a base route.
      *
-     * @param string $baseRoute The route sub pattern to mount the callbacks on
-     * @param callable $fn The callback method
+     * @param string   $baseRoute The route sub pattern to mount the callbacks on
+     * @param callable $fn        The callback method
      */
     public function mount($baseRoute, $fn)
     {
@@ -193,119 +187,111 @@ class Router
     }
 
     /**
-     * Get all request headers
+     * Get all request headers.
      *
-     * @param string|null $requestedHeader A specific header to return
-     * @return array|string|bool The request headers
+     * @return array The request headers
      */
-    public function headers($requestedHeader = null)
+    public function getRequestHeaders()
     {
-        // If our headers variable is not set, we need to fill it
-        if (empty($this->headers)) {
-            $headers = array();
+        $headers = array();
 
-            // If getallheaders() is available, use that
-            if (function_exists('getallheaders')) {
-                $headers = getallheaders();
+        // If getallheaders() is available, use that
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
 
-                // getallheaders() can return false if something got wrong
-                if ($headers !== false) {
-                    return $this->headers = $headers;
-                }
+            // getallheaders() can return false if something went wrong
+            if ($headers !== false) {
+                return $headers;
             }
-
-            // Method getallheaders() not available or went wrong: manually extract 'm
-            foreach ($_SERVER as $name => $value) {
-                if ((substr($name, 0, 5) == 'HTTP_') || ($name == 'CONTENT_TYPE') || ($name == 'CONTENT_LENGTH')) {
-                    $headers[str_replace(array(' ', 'Http'), array('-', 'HTTP'), ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-                }
-            }
-
-            $this->headers = $headers;
         }
 
-        // Check if want a specific header
-        if ($requestedHeader !== null) {
-            return array_key_exists($requestedHeader, $this->headers) ? $this->headers[$requestedHeader] : false;
+        // Method getallheaders() not available or went wrong: manually extract 'm
+        foreach ($_SERVER as $name => $value) {
+            if ((substr($name, 0, 5) == 'HTTP_') || ($name == 'CONTENT_TYPE') || ($name == 'CONTENT_LENGTH')) {
+                $headers[str_replace(array(' ', 'Http'), array('-', 'HTTP'), ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
         }
 
-        return $this->headers;
+        return $headers;
     }
 
     /**
-     * Get the request method used, taking overrides into account
+     * Get the request method used, taking overrides into account.
      *
      * @return string The Request method to handle
      */
-    public function method()
+    public function getRequestMethod()
     {
-        // If the Requested Method wasn't stored yet, store it (second clause, because of phpunit)
-        if (empty($this->method)) {
-            // Take the method as found in $_SERVER
-            $method = $_SERVER['REQUEST_METHOD'];
+        // Take the method as found in $_SERVER
+        $method = $_SERVER['REQUEST_METHOD'];
 
-            // If it's a HEAD request override it to being GET and prevent any output, as per HTTP Specification
-            // @url http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-            if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
-                ob_start();
-                $method = 'GET';
-            } // If it's a POST request, check for a method override header
-            elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                if ($this->headers('X-HTTP-Method-Override') && in_array($this->headers('X-HTTP-Method-Override'), array('PUT', 'DELETE', 'PATCH'))) {
-                    $method = $this->headers('X-HTTP-Method-Override');
-                }
+        // If it's a HEAD request override it to being GET and prevent any output, as per HTTP Specification
+        // @url http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
+        if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
+            ob_start();
+            $method = 'GET';
+        } // If it's a POST request, check for a method override header
+        elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $headers = $this->getRequestHeaders();
+            if (isset($headers['X-HTTP-Method-Override']) && in_array($headers['X-HTTP-Method-Override'], array('PUT', 'DELETE', 'PATCH'))) {
+                $method = $headers['X-HTTP-Method-Override'];
             }
-
-            return $this->method = $method;
         }
 
-        return $this->method;
+        return $method;
     }
 
     /**
-     * Get the given Namespace before
+     * Set a Default Lookup Namespace for Callable methods.
+     *
+     * @param string $namespace A given namespace
+     */
+    public function setNamespace($namespace)
+    {
+        if (is_string($namespace)) {
+            $this->namespace = $namespace;
+        }
+    }
+
+    /**
+     * Get the given Namespace before.
      *
      * @return string The given Namespace if exists
      */
     public function getNamespace()
     {
-        return $this->namespace . '\\';
+        return $this->namespace;
     }
 
     /**
-     * Execute the router: Loop all defined before middleware's and routes, and execute the handling function if a match was found
+     * Execute the router: Loop all defined before middleware's and routes, and execute the handling function if a match was found.
      *
      * @param object|callable $callback Function to be executed after a matching route was handled (= after router middleware)
-     * @param null $namespace A desired namespace for lookup on the Class@Method Calls
+     *
      * @return bool
      */
-    public function run($callback = null, $namespace = null)
+    public function run($callback = null)
     {
-        // Define the namespace if were set
-        if (is_string($namespace)) {
-            $this->namespace = $namespace;
-        }
-
-        // Set headers and method if actually not set.
-        $this->method();
+        // Define which method we need to handle
+        $this->requestedMethod = $this->getRequestMethod();
 
         // Handle all before middlewares
-        if (isset($this->beforeRoutes[$this->method])) {
-            $this->handle($this->beforeRoutes[$this->method]);
+        if (isset($this->beforeRoutes[$this->requestedMethod])) {
+            $this->handle($this->beforeRoutes[$this->requestedMethod]);
         }
 
         // Handle all routes
         $numHandled = 0;
-        if (isset($this->afterRoutes[$this->method])) {
-            $numHandled = $this->handle($this->afterRoutes[$this->method], true);
+        if (isset($this->afterRoutes[$this->requestedMethod])) {
+            $numHandled = $this->handle($this->afterRoutes[$this->requestedMethod], true);
         }
 
         // If no route was handled, trigger the 404 (if any)
         if ($numHandled === 0) {
-            if ($this->notFoundCallback && is_callable($this->notFoundCallback)) {
-                call_user_func($this->notFoundCallback);
+            if ($this->notFoundCallback) {
+                $this->invoke($this->notFoundCallback);
             } else {
-                @header("{$_SERVER['SERVER_PROTOCOL']} 404 Not Found", true, 404);
+                header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
             }
         } // If a route was handled, perform the finish callback (if any)
         else {
@@ -324,7 +310,7 @@ class Router
     }
 
     /**
-     * Set the 404 handling function
+     * Set the 404 handling function.
      *
      * @param object|callable $fn The function to be executed
      */
@@ -334,10 +320,11 @@ class Router
     }
 
     /**
-     * Handle a a set of routes: if a match is found, execute the relating handling function
+     * Handle a a set of routes: if a match is found, execute the relating handling function.
      *
-     * @param array $routes Collection of route patterns and their handling functions
-     * @param boolean $quitAfterRun Does the handle function need to quit after one route was matched?
+     * @param array $routes       Collection of route patterns and their handling functions
+     * @param bool  $quitAfterRun Does the handle function need to quit after one route was matched?
+     *
      * @return int The number of routes handled
      */
     private function handle($routes, $quitAfterRun = false)
@@ -354,7 +341,7 @@ class Router
             $route['pattern'] = preg_replace('/{([A-Za-z]*?)}/', '(\w+)', $route['pattern']);
 
             // we have a match!
-            if (preg_match_all('#^' . $route['pattern'] . '$#', $uri, $matches, PREG_OFFSET_CAPTURE)) {
+            if (preg_match_all('#^'.$route['pattern'].'$#', $uri, $matches, PREG_OFFSET_CAPTURE)) {
                 // Rework matches to only contain the matches, not the orig string
                 $matches = array_slice($matches, 1);
 
@@ -366,30 +353,14 @@ class Router
                         return trim(substr($match[0][0], 0, $matches[$index + 1][0][1] - $match[0][1]), '/');
                     } // We have no following parameters: return the whole lot
                     else {
-                        return (isset($match[0][0]) ? trim($match[0][0], '/') : null);
+                        return isset($match[0][0]) ? trim($match[0][0], '/') : null;
                     }
                 }, $matches, array_keys($matches));
 
                 // Call the handling function with the URL parameters if the desired input is callable
-                if (is_callable($route['fn'])) {
-                    call_user_func_array($route['fn'], $params);
-                } // if not, check the existence of special parameters
-                elseif (stripos($route['fn'], '@') !== false) {
-                    // explode segments of given route
-                    list($controller, $method) = explode('@', $route['fn']);
-                    // tries to acquire a default namespace for the controller, if no default namespace set will try full namespace
-                    $controller = $this->getNamespace() . $controller;
-                    // check if class exists, if not just ignore and check if the class exists on the default namespace
-                    if (class_exists($controller)) {
-                        // first check if is a static method, directly trying to invoke it. if isn't a valid static method, we will try as a normal method invocation.
-                        if (call_user_func_array(array(new $controller, $method), $params) === false) {
-                            // try call the method as an non-static method. (the if does nothing, only avoids the notice)
-                            if (forward_static_call_array(array($controller, $method), $params) === false) ;
-                        }
-                    }
-                }
+                $this->invoke($route['fn'], $params);
 
-                $numHandled++;
+                ++$numHandled;
 
                 // If we need to quit, then quit
                 if ($quitAfterRun) {
@@ -402,8 +373,31 @@ class Router
         return $numHandled;
     }
 
+    private function invoke($fn, $params = array()) {
+        if (is_callable($fn)) {
+            call_user_func_array($fn, $params);
+        } // If not, check the existence of special parameters
+        elseif (stripos($fn, '@') !== false) {
+            // Explode segments of given route
+            list($controller, $method) = explode('@', $fn);
+            // Adjust controller class if namespace has been set
+            if ($this->getNamespace() !== '') {
+                $controller = $this->getNamespace().'\\'.$controller;
+            }
+            // Check if class exists, if not just ignore and check if the class exists on the default namespace
+            if (class_exists($controller)) {
+                // First check if is a static method, directly trying to invoke it.
+                // If isn't a valid static method, we will try as a normal method invocation.
+                if (call_user_func_array(array(new $controller(), $method), $params) === false) {
+                    // Try to call the method as an non-static method. (the if does nothing, only avoids the notice)
+                    if (forward_static_call_array(array($controller, $method), $params) === false);
+                }
+            }
+        }
+    }
+
     /**
-     * Define the current relative URI
+     * Define the current relative URI.
      *
      * @return string
      */
@@ -418,7 +412,7 @@ class Router
         }
 
         // Remove trailing slash + enforce a slash at the start
-        return '/' . trim($uri, '/');
+        return '/'.trim($uri, '/');
     }
 
     /**
@@ -430,7 +424,7 @@ class Router
     {
         // Check if server base path is defined, if not define it.
         if ($this->serverBasePath === null) {
-            $this->serverBasePath = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)) . '/';
+            $this->serverBasePath = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)).'/';
         }
 
         return $this->serverBasePath;
